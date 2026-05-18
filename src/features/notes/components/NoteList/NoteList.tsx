@@ -3,21 +3,21 @@ import styles from "./NoteList.module.css";
 
 interface NoteListProps {
   notes: Note[];
-  addNote: (note: Note) => void;
   deleteNote: (id: string) => void;
   selectedNoteId: string | null;
   onSelectNote: (id: string) => void;
+  toggleField: (id: string, field: keyof Note) => void;
+  setIsEdit: (status: boolean) => void;
 }
 
 export const NoteList = ({
   notes,
-  addNote,
   deleteNote,
   selectedNoteId,
   onSelectNote,
+  toggleField,
+  setIsEdit,
 }: NoteListProps) => {
-  const selectedNote = notes.find((n) => n.id === selectedNoteId);
-
   return (
     <div className={styles["notes"]}>
       <h1 className={styles["notes__count"]}>Заметок: {notes.length}</h1>
@@ -47,34 +47,47 @@ export const NoteList = ({
                   deleteNote(note.id);
                 }}
               >
-                ♻️
+                <img src="/icons/delete-icon.svg" alt="delete" />
+              </button>
+              <button
+                className={styles["notes__list-item-favorite"]}
+                onClick={() => {
+                  toggleField(note.id, "isFavorite");
+                }}
+              >
+                <img
+                  src={
+                    note.isFavorite ? "/icons/star-fill.png" : "/icons/star.png"
+                  }
+                  alt="favorites"
+                />
+              </button>
+              <button
+                className={styles["notes__list-item-archive"]}
+                onClick={() => toggleField(note.id, "isArchived")}
+              >
+                <img
+                  src={
+                    note.isArchived
+                      ? "/icons/archived.png"
+                      : "/icons/archive.png"
+                  }
+                  alt="archive"
+                />
+              </button>
+              <button
+                className={styles["notes__list-item-edit"]}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEdit(true);
+                }}
+              >
+                <img src="/icons/edit.png" alt="edit" />
               </button>
             </li>
           );
         })}
       </ul>
-
-      <button
-        className={styles["notes__add"]}
-        onClick={() => {
-          addNote({
-            id: crypto.randomUUID(),
-            title: "Заметка",
-            content: "Текст заметки",
-          });
-        }}
-      >
-        Добавить
-      </button>
-
-      {selectedNoteId ? (
-        <div className={styles["notes__content"]}>
-          <h2>{selectedNote?.title}</h2>
-          <p>{selectedNote?.content}</p>
-        </div>
-      ) : (
-        "Выберите заметку"
-      )}
     </div>
   );
 };

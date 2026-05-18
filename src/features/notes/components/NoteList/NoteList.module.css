@@ -1,29 +1,32 @@
 .notes {
   max-width: 1920px;
   width: 100%;
-  border: 3px solid #34b78b;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   padding-block: 20px;
 
   & .notes__list {
-    width: 100%;
+    width: 95%;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     list-style: none;
-    column-gap: 20px;
-    row-gap: 10px;
+    gap: 20px;
+    padding-left: 0;
+    margin-bottom: 40px;
+    padding-inline: 18px;
 
     & .notes__list-item {
-      border: 3px solid #34b78b;
-      min-width: 240px;
+      border: 4px solid #34b78b;
+      width: 160px;
+      height: 260px;
       padding: 20px;
       position: relative;
       cursor: pointer;
       transition: all 0.2s;
       transform: translateY(0);
+      margin-bottom: 40px;
 
       & .notes__list-item-title {
         text-align: center;
@@ -33,27 +36,91 @@
         text-align: left;
       }
 
-      & .notes__list-item-delete {
+      & .notes__list-item-delete,
+      & .notes__list-item-favorite,
+      & .notes__list-item-archive,
+      & .notes__list-item-edit {
         position: absolute;
         content: "";
-        top: 20px;
-        right: 10px;
-        max-width: 30px;
-        max-height: 30px;
         border: none;
         background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-        font-size: 20px;
-        line-height: 0;
-        transition: transform 0.2s;
+        background-color: #34b78b;
+        transition: transform 0.2s ease;
+      }
+
+      & .notes__list-item-delete {
+        bottom: -30px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        transform: scaleY(1);
+        transform-origin: top;
 
         &:hover {
-          transform: scale(1.3);
+          transform: scaleY(1.2);
+        }
+
+        & img {
+          width: 120%;
+        }
+      }
+
+      & .notes__list-item-favorite {
+        top: -31px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        transform: scaleY(1);
+        transform-origin: bottom;
+
+        &:hover {
+          transform: scaleY(1.2);
+        }
+
+        & img {
+          width: 120%;
+        }
+      }
+
+      & .notes__list-item-archive {
+        top: -31px;
+        right: 50px;
+        width: 30px;
+        height: 30px;
+        transform: scaleY(1);
+        transform-origin: bottom;
+
+        &:hover {
+          transform: scaleY(1.2);
+        }
+
+        & img {
+          width: 120%;
+        }
+      }
+
+      & .notes__list-item-edit {
+        bottom: 10px;
+        right: 10px;
+        background-color: transparent;
+        transform: rotate(0);
+        transform: translateY(0);
+
+        &:hover {
+          transform: rotate(5deg) translateY(-2px);
         }
       }
 
       &.isSelected {
         box-shadow: 0 4px 4px 4px #78d9b8;
+        transform: translateY(-6px);
+      }
+
+      &:hover {
         transform: translateY(-6px);
       }
     }

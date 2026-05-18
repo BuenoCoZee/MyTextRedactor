@@ -1,0 +1,36 @@
+.sidebar {
+  width: 100%;
+  flex-shrink: 0;
+  border-right: 2px solid #34b78b;
+  min-height: 100vh;
+  height: 100%;
+
+  & ul {
+    list-style: none;
+    padding-inline: 20px;
+    padding-top: 40px;
+
+    & .sidebar__nav-item {
+      cursor: pointer;
+      padding: 22px 12px;
+      transform: translateY(0);
+      transition-duration: 0.2s;
+      font-size: 20px;
+      margin-bottom: 5px;
+
+      &:hover {
+        background-color: #5d5d5d;
+        transform: translateY(-10px);
+        border-right: 3px solid #34b78b;
+        box-shadow: 0px 4px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      &.isSelected {
+        background-color: #5d5d5d;
+        transform: translateY(-10px);
+        border-right: 3px solid #34b78b;
+        box-shadow: 0px 4px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}

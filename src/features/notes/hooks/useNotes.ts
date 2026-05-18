@@ -24,5 +24,33 @@ export const useNotes = () => {
     });
   };
 
-  return { notes, addNote, deleteNote };
+  const toggleField = (id: string, field: keyof Note) => {
+    setNotes((prevData) => {
+      const updatedData = prevData.map((prevNote) => {
+        return prevNote.id === id
+          ? { ...prevNote, [field]: !prevNote[field] }
+          : prevNote;
+      });
+
+      saveNotes(updatedData);
+
+      return updatedData;
+    });
+  };
+
+  const updateNote = (id: string, title: string, content: string) => {
+    setNotes((prevData) => {
+      const updatedData = prevData.map((prevNote) => {
+        return prevNote.id === id
+          ? { ...prevNote, title: title, content: content }
+          : prevNote;
+      });
+
+      saveNotes(updatedData);
+
+      return updatedData;
+    });
+  };
+
+  return { notes, addNote, deleteNote, toggleField, updateNote };
 };
