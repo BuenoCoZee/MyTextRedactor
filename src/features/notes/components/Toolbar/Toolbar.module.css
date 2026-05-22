@@ -1,0 +1,52 @@
+.toolbar {
+  width: 100%;
+  border-bottom: 1px solid var(--color-turquoise-1);
+  padding: 20px 80px;
+
+  & .toolbar__global {
+    display: flex;
+    justify-content: flex-end;
+
+    & .toolbar__global-create {
+      width: 30px;
+      height: 30px;
+      border: 3px solid var(--color-turquoise-1);
+      background-color: transparent;
+      color: var(--color-turquoise-1);
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: var(--color-dark-1);
+        background-color: var(--color-turquoise-1);
+      }
+    }
+  }
+
+  & .toolbar__note {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 20px;
+
+    & .toolbar__note-button {
+      transition: transform 0.2s ease;
+
+      transform: translateY(0);
+
+      &:hover {
+        transform: translateY(-5px);
+
+        & img {
+          transition: filter 0.2s ease;
+          filter: drop-shadow(0 10px 5px rgba(0, 0, 0, 0.3));
+        }
+      }
+    }
+  }
+}

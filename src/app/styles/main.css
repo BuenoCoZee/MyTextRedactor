@@ -1,0 +1,38 @@
+@import "./normalize";
+@import "./variables";
+
+body {
+  background-color: var(--color-dark-1);
+  color: var(--color-turquoise-1);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+.page-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+}
+
+.note__add {
+  position: fixed;
+  top: 90%;
+  left: 90%;
+  width: 60px;
+  height: 60px;
+  border: 3px solid var(--color-turquoise-1);
+  background-color: transparent;
+  color: var(--color-turquoise-1);
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: var(--color-dark-1);
+    background-color: var(--color-turquoise-1);
+  }
+}

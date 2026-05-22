@@ -4,8 +4,7 @@ import styles from "./NoteList.module.css";
 interface NoteListProps {
   notes: Note[];
   deleteNote: (id: string) => void;
-  selectedNoteId: string | null;
-  onSelectNote: (id: string) => void;
+  onSelectNote: (note: Note) => void;
   toggleField: (id: string, field: keyof Note) => void;
   setIsEdit: (status: boolean) => void;
 }
@@ -13,7 +12,6 @@ interface NoteListProps {
 export const NoteList = ({
   notes,
   deleteNote,
-  selectedNoteId,
   onSelectNote,
   toggleField,
   setIsEdit,
@@ -25,14 +23,11 @@ export const NoteList = ({
         {notes.map((note) => {
           return (
             <li
-              className={
-                note.id === selectedNoteId
-                  ? `${styles["notes__list-item"]} ${styles["isSelected"]}`
-                  : `${styles["notes__list-item"]}`
-              }
+              className={`${styles["notes__list-item"]}`}
               key={note.id}
               onClick={() => {
-                onSelectNote(note.id);
+                onSelectNote(note);
+                setIsEdit(true);
               }}
             >
               <h2
@@ -43,7 +38,8 @@ export const NoteList = ({
               </p>
               <button
                 className={styles["notes__list-item-delete"]}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   deleteNote(note.id);
                 }}
               >
@@ -51,7 +47,8 @@ export const NoteList = ({
               </button>
               <button
                 className={styles["notes__list-item-favorite"]}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   toggleField(note.id, "isFavorite");
                 }}
               >
@@ -64,7 +61,10 @@ export const NoteList = ({
               </button>
               <button
                 className={styles["notes__list-item-archive"]}
-                onClick={() => toggleField(note.id, "isArchived")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleField(note.id, "isArchived");
+                }}
               >
                 <img
                   src={
@@ -74,15 +74,6 @@ export const NoteList = ({
                   }
                   alt="archive"
                 />
-              </button>
-              <button
-                className={styles["notes__list-item-edit"]}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEdit(true);
-                }}
-              >
-                <img src="/icons/edit.png" alt="edit" />
               </button>
             </li>
           );
