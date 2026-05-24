@@ -1,11 +1,14 @@
 import styles from "./NoteEditor.module.css";
 import { type ChangeEvent } from "react";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
 
 interface NoteEditorProps {
   title: string;
   content: string;
   onTitleChange: (value: string) => void;
   onContentChange: (value: string) => void;
+  textareaRef: React.Ref<HTMLTextAreaElement>;
 }
 
 export const NoteEditor = ({
@@ -13,6 +16,7 @@ export const NoteEditor = ({
   content,
   onTitleChange,
   onContentChange,
+  textareaRef,
 }: NoteEditorProps) => {
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onTitleChange(e.target.value);
@@ -41,7 +45,14 @@ export const NoteEditor = ({
           value={content}
           onChange={handleTextareaChange}
           placeholder="Что бы записать..."
+          ref={textareaRef}
         ></textarea>
+        <div
+          className={styles["editor__content-preview"]}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(marked.parse(content, { async: false })),
+          }}
+        ></div>
       </div>
     </div>
   );

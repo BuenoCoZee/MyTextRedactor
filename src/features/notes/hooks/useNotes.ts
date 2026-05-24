@@ -42,7 +42,12 @@ export const useNotes = () => {
     setNotes((prevData) => {
       const updatedData = prevData.map((prevNote) => {
         return prevNote.id === id
-          ? { ...prevNote, title: title, content: content }
+          ? {
+              ...prevNote,
+              title: title,
+              content: content,
+              updatedAt: new Date().toISOString(),
+            }
           : prevNote;
       });
 

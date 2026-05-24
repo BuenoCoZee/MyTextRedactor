@@ -4,6 +4,7 @@
   flex-direction: column;
   align-items: center;
   padding-block: 20px;
+  margin-top: 70px;
 
   & .notes__list {
     max-width: 1400px;

@@ -1,7 +1,10 @@
 .sidebar {
-  border-right: 2px solid #34b78b;
-  min-height: 100vh;
+  border-right: 2px solid var(--color-turquoise-2);
   height: 100%;
+  position: fixed;
+  width: 250px;
+  z-index: 200;
+  background-color: var(--color-dark-1);
 
   & ul {
     list-style: none;
@@ -17,16 +20,16 @@
       margin-bottom: 5px;
 
       &:hover {
-        background-color: #5d5d5d;
+        background-color: var(--color-gray);
         transform: translateY(-10px);
-        border-right: 3px solid #34b78b;
+        border-right: 3px solid var(--color-turquoise-2);
         box-shadow: 0px 4px 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       &.isSelected {
-        background-color: #5d5d5d;
+        background-color: var(--color-gray);
         transform: translateY(-10px);
-        border-right: 3px solid #34b78b;
+        border-right: 3px solid var(--color-turquoise-2);
         box-shadow: 0px 4px 2px 4px rgba(0, 0, 0, 0.2);
       }
     }
