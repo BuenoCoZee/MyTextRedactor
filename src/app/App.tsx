@@ -1,13 +1,13 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { useNotes } from "../features/notes/hooks/useNotes";
 import { NoteList } from "../features/notes/components/NoteList/NoteList";
 import { Sidebar } from "../features/notes/components/Sidebar/Sidebar";
 import { NoteEditor } from "../features/notes/components/NoteEditor/NoteEditor";
 import { Toolbar } from "../features/notes/components/Toolbar/Toolbar";
+import type { Editor } from "@tiptap/react";
 
-import type { Tab, Note, Filter, FormatType } from "../features/notes/types";
+import type { Tab, Note, Filter, NoteColor } from "../features/notes/types";
 import "./App.css";
-import { wrapSelectedText } from "../features/notes/utils/markdown";
 
 function App() {
   const { notes, addNote, deleteNote, toggleField, updateNote } = useNotes();
@@ -20,7 +20,10 @@ function App() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<Filter>("none");
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [editor, setEditor] = useState<Editor | null>(null);
+  const [noteColor, setNoteColor] = useState<NoteColor>("#2a2a2a");
+
+  const [currentTextColor, setCurrentTextColor] = useState<string>("#78d9b8");
 
   const filteredNotes = notes.filter((note) => {
     switch (activeTab) {
@@ -50,7 +53,7 @@ function App() {
             return +new Date(b.createdAt) - +new Date(a.createdAt);
 
           case "updatedAt":
-            return +new Date(a.updatedAt) - +new Date(b.updatedAt);
+            return +new Date(b.updatedAt) - +new Date(a.updatedAt);
 
           default:
             return a.title.localeCompare(b.title);
@@ -64,7 +67,7 @@ function App() {
   const handleSave = () => {
     if (editingTitle.replace(/^\s+/, "") === "") return;
     if (selectedNoteId !== null)
-      updateNote(selectedNoteId!, editingTitle, editingContent);
+      updateNote(selectedNoteId!, editingTitle, editingContent, noteColor);
 
     if (selectedNoteId === null) {
       addNote({
@@ -75,6 +78,7 @@ function App() {
         isArchived: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        bgColor: noteColor,
       });
     }
 
@@ -100,28 +104,19 @@ function App() {
     setEditingTitle(note.title);
     setEditingContent(note.content);
     setIsEditing(true);
+    setNoteColor(note.bgColor);
   };
 
-  const handleFormat = (formatType: FormatType) => {
-    if (textareaRef.current === null) return;
-    const { value, selectionStart, selectionEnd } = textareaRef.current;
+  const handleEditorReady = (editor: Editor | null) => {
+    setEditor(editor);
+  };
 
-    const selectionData = wrapSelectedText(
-      value,
-      selectionStart,
-      selectionEnd,
-      formatType,
-    );
+  const handleBgColorChange = (color: NoteColor) => {
+    setNoteColor(color);
+  };
 
-    setEditingContent(selectionData.newValue);
-
-    setTimeout(() => {
-      textareaRef.current?.focus();
-      textareaRef.current?.setSelectionRange(
-        selectionData.newCursorPos,
-        selectionData.newCursorPos,
-      );
-    }, 0);
+  const handleTextColorChange = (color: string) => {
+    setCurrentTextColor(color);
   };
 
   return (
@@ -139,7 +134,9 @@ function App() {
           filter={sortBy}
           setSearchQuery={setSearchQuery}
           setFilter={setSortBy}
-          onFormat={handleFormat}
+          editor={editor}
+          textColor={currentTextColor}
+          setTextColor={handleTextColorChange}
         />
         {isEditing ? (
           <NoteEditor
@@ -147,7 +144,10 @@ function App() {
             content={editingContent}
             onTitleChange={setEditingTitle}
             onContentChange={setEditingContent}
-            textareaRef={textareaRef}
+            onEditorReady={handleEditorReady}
+            noteColor={noteColor}
+            setNoteColor={handleBgColorChange}
+            onColorChange={handleTextColorChange}
           />
         ) : (
           <NoteList

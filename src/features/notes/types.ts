@@ -6,6 +6,7 @@ export interface Note {
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;
+  bgColor: NoteColor;
 }
 
 export type Tab = "all" | "favorites" | "archive";
@@ -18,3 +19,11 @@ export type Filter =
   | "none";
 
 export type FormatType = "bold" | "italic" | "code";
+
+export type NoteColor =
+  | "#2a2a2a"
+  | "#5A4D61"
+  | "#8C6F72"
+  | "#5A6960"
+  | "#4D5D6B"
+  | "#6B5E53";

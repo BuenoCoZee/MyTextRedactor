@@ -1,5 +1,6 @@
 import type { Note } from "../../types";
 import styles from "./NoteList.module.css";
+import DOMPurify from "dompurify";
 
 interface NoteListProps {
   notes: Note[];
@@ -24,6 +25,7 @@ export const NoteList = ({
           return (
             <li
               className={`${styles["notes__list-item"]}`}
+              style={{ backgroundColor: note.bgColor }}
               key={note.id}
               onClick={() => {
                 onSelectNote(note);
@@ -33,9 +35,12 @@ export const NoteList = ({
               <h2
                 className={styles["notes__list-item-title"]}
               >{`${note.title}`}</h2>
-              <p className={styles["notes__list-item-content"]}>
-                {note.content}
-              </p>
+              <div
+                className={styles["notes__list-item-content"]}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(note.content),
+                }}
+              ></div>
               <button
                 className={styles["notes__list-item-delete"]}
                 onClick={(e) => {

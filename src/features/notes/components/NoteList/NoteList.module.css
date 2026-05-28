@@ -34,8 +34,12 @@
         text-align: center;
       }
 
-      & .notes__list-item-subtitle {
-        text-align: left;
+      & .notes__list-item-content {
+        display: -webkit-box;
+        line-clamp: 3;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
 
       & .notes__list-item-delete,

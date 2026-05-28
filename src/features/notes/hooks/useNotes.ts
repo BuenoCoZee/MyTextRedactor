@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Note } from "../types";
+import type { Note, NoteColor } from "../types";
 import { loadNotes, saveNotes } from "../notesService";
 
 export const useNotes = () => {
@@ -38,7 +38,12 @@ export const useNotes = () => {
     });
   };
 
-  const updateNote = (id: string, title: string, content: string) => {
+  const updateNote = (
+    id: string,
+    title: string,
+    content: string,
+    noteColor: NoteColor,
+  ) => {
     setNotes((prevData) => {
       const updatedData = prevData.map((prevNote) => {
         return prevNote.id === id
@@ -47,6 +52,7 @@ export const useNotes = () => {
               title: title,
               content: content,
               updatedAt: new Date().toISOString(),
+              bgColor: noteColor,
             }
           : prevNote;
       });

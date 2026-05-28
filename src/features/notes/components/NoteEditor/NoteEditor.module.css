@@ -1,7 +1,27 @@
 .editor {
-  width: 100%;
   background-color: var(--color-dark-1);
   margin-top: 70px;
+  position: relative;
+  border-radius: 12px;
+  border: 3px solid var(--color-turquoise-2);
+  margin-inline: 40px;
+  padding: 20px 40px;
+
+  & .editor__colors {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    display: flex;
+    column-gap: 5px;
+    background-color: var(--color-turquoise-2);
+    padding: 5px;
+
+    & .editor__colors-color {
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+    }
+  }
 
   & .editor__label {
     display: flex;
@@ -9,7 +29,7 @@
     & input {
       width: 70%;
       font-size: 64px;
-      background-color: var(--color-dark-1);
+      background-color: transparent;
       border: none;
       outline: none;
       color: var(--color-turquoise-1);
@@ -25,45 +45,34 @@
   }
 
   & .editor__content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    position: relative;
     padding-top: 40px;
 
-    & textarea {
-      display: flex;
-      width: 100% !important;
-      max-height: 100% !important;
+    & .editor__content-field {
       font-size: 36px;
       background-color: transparent;
-      color: var(--color-turquoise-1);
-      border: none;
-      outline: none;
-      resize: none;
-      field-sizing: content;
-      flex: 1;
-      padding-inline: 40px;
-      border-right: 3px solid var(--color-turquoise-1);
-      min-height: 100vh;
 
-      &::placeholder {
-        color: var(--color-turquoise-1);
-        opacity: 0.7;
+      outline: none;
+      min-height: 60vh;
+
+      & blockquote {
+        font-style: italic;
+        padding-left: 20px;
+        font-weight: bold;
       }
-    }
 
-    & .editor__content-preview {
-      display: flex;
-      width: 100% !important;
-      max-height: 100% !important;
-      font-size: 36px;
-      background-color: transparent;
-      color: var(--color-turquoise-1);
-      border: none;
-      outline: none;
-      resize: none;
-      field-sizing: content;
-      flex: 1;
-      padding-inline: 40px;
+      ol,
+      ul {
+        padding-left: 80px;
+      }
+
+      & ol {
+        list-style: decimal;
+      }
+
+      & ul {
+        list-style: square;
+      }
     }
   }
 }
