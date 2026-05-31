@@ -1,46 +1,46 @@
 import type { Tab } from "../../types";
+import { SidebarItem } from "../SidebarItem/SidebarItem";
 import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
   activeTab: Tab;
   setActiveTab: (tab: Tab) => void;
+  isMobileMenuOpen: boolean;
 }
 
-export const Sidebar = ({ activeTab, setActiveTab }: SidebarProps) => {
+export const Sidebar = ({
+  activeTab,
+  setActiveTab,
+  isMobileMenuOpen,
+}: SidebarProps) => {
   return (
-    <aside className={styles["sidebar"]}>
+    <aside
+      className={
+        isMobileMenuOpen
+          ? `${styles["sidebar"]} ${styles["isOpened"]}`
+          : `${styles["sidebar"]}`
+      }
+    >
       <nav className={styles["sidebar__nav"]} aria-label="Main menu">
         <ul>
-          <li
-            className={
-              activeTab === "all"
-                ? `${styles["sidebar__nav-item"]} ${styles["isSelected"]}`
-                : `${styles["sidebar__nav-item"]}`
-            }
-            onClick={() => setActiveTab("all")}
-          >
-            Все
-          </li>
-          <li
-            className={
-              activeTab === "favorites"
-                ? `${styles["sidebar__nav-item"]} ${styles["isSelected"]}`
-                : `${styles["sidebar__nav-item"]}`
-            }
-            onClick={() => setActiveTab("favorites")}
-          >
-            Избранное
-          </li>
-          <li
-            className={
-              activeTab === "archive"
-                ? `${styles["sidebar__nav-item"]} ${styles["isSelected"]}`
-                : `${styles["sidebar__nav-item"]}`
-            }
-            onClick={() => setActiveTab("archive")}
-          >
-            Архив
-          </li>
+          <SidebarItem
+            localTab="all"
+            tabClass="sidebar__nav-item"
+            currentActiveTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+          <SidebarItem
+            localTab="favorites"
+            tabClass="sidebar__nav-item"
+            currentActiveTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+          <SidebarItem
+            localTab="archive"
+            tabClass="sidebar__nav-item"
+            currentActiveTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
         </ul>
       </nav>
     </aside>

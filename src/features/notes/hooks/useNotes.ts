@@ -1,30 +1,89 @@
-import { useState } from "react";
-import type { Note, NoteColor } from "../types";
-import { loadNotes, saveNotes } from "../notesService";
+import { useEffect, useState } from "react";
+import type { Note, NoteColor, ToggleField } from "../types";
+import { notesService } from "../notesService";
 
 export const useNotes = () => {
-  const [notes, setNotes] = useState<Note[]>(() => loadNotes());
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const addNote = (noteItem: Note) => {
-    setNotes((prevData) => {
-      const updatedNotes = [...prevData, noteItem];
-      saveNotes(updatedNotes);
+  const addNote = async (noteItem: Note) => {
+    const dbNote = {
+      title: noteItem.title,
+      content: noteItem.content,
+      is_favorite: noteItem.isFavorite,
+      is_archived: noteItem.isArchived,
+      bg_color: noteItem.bgColor,
+    };
 
-      return updatedNotes;
-    });
+    try {
+      const newNote = await notesService.createNote(dbNote);
+      setNotes((prevData) => {
+        const updatedNotes = [...prevData, newNote];
+
+        return updatedNotes;
+      });
+    } catch (err) {
+      console.error("ошибка при создании заметки", err);
+    }
   };
 
-  const deleteNote = (id: string) => {
-    setNotes((prevData) => {
-      const filteredData = prevData.filter((note) => note.id !== id);
+  const deleteNote = async (id: string) => {
+    try {
+      await notesService.deleteNote(id);
+      setNotes((prevData) => {
+        const filteredData = prevData.filter((note) => note.id !== id);
 
-      saveNotes(filteredData);
-
-      return filteredData;
-    });
+        return filteredData;
+      });
+    } catch (err) {
+      console.error("Ошибка при удалении заметки", err);
+    }
   };
 
-  const toggleField = (id: string, field: keyof Note) => {
+  const updateNote = async (
+    id: string,
+    title: string,
+    content: string,
+    noteColor: NoteColor,
+  ) => {
+    const dbNote = { title: title, content: content, bg_color: noteColor };
+
+    try {
+      await notesService.updateNote(id, dbNote);
+      setNotes((prevData) => {
+        const updatedData = prevData.map((prevNote) => {
+          return prevNote.id === id
+            ? {
+                ...prevNote,
+                title: title,
+                content: content,
+                bgColor: noteColor,
+              }
+            : prevNote;
+        });
+
+        return updatedData;
+      });
+    } catch (err) {
+      console.error("Ошибка при редактировании заметки", err);
+    }
+  };
+
+  const toggleField = async (id: string, field: ToggleField) => {
+    const currentNote = notes.find((note) => note.id === id);
+
+    if (!currentNote) return;
+
+    const fieldMap = { isFavorite: "is_favorite", isArchived: "is_archived" };
+    const dbField = fieldMap[field];
+    const dbData = { [dbField]: !currentNote[field] };
+
+    try {
+      await notesService.updateNote(id, dbData);
+    } catch (err) {
+      console.error("Ошибка при изменении состояния заметки", err);
+    }
+
     setNotes((prevData) => {
       const updatedData = prevData.map((prevNote) => {
         return prevNote.id === id
@@ -32,36 +91,26 @@ export const useNotes = () => {
           : prevNote;
       });
 
-      saveNotes(updatedData);
-
       return updatedData;
     });
   };
 
-  const updateNote = (
-    id: string,
-    title: string,
-    content: string,
-    noteColor: NoteColor,
-  ) => {
-    setNotes((prevData) => {
-      const updatedData = prevData.map((prevNote) => {
-        return prevNote.id === id
-          ? {
-              ...prevNote,
-              title: title,
-              content: content,
-              updatedAt: new Date().toISOString(),
-              bgColor: noteColor,
-            }
-          : prevNote;
-      });
+  useEffect(() => {
+    const loadNotes = async () => {
+      setIsLoading(true);
 
-      saveNotes(updatedData);
+      try {
+        const data = await notesService.getAll();
+        setNotes(data);
+      } catch (err) {
+        console.error("Не удалось загрузить заметки", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      return updatedData;
-    });
-  };
+    loadNotes();
+  }, []);
 
-  return { notes, addNote, deleteNote, toggleField, updateNote };
+  return { notes, addNote, deleteNote, toggleField, updateNote, isLoading };
 };

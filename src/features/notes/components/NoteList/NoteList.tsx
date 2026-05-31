@@ -1,18 +1,18 @@
-import type { Note } from "../../types";
+import type { Note, ToggleField } from "../../types";
+import { NoteCard } from "../NoteCard/NoteCard";
 import styles from "./NoteList.module.css";
-import DOMPurify from "dompurify";
 
 interface NoteListProps {
   notes: Note[];
-  deleteNote: (id: string) => void;
+  onRequestDelete: (noteId: string) => void;
   onSelectNote: (note: Note) => void;
-  toggleField: (id: string, field: keyof Note) => void;
+  toggleField: (id: string, field: ToggleField) => void;
   setIsEdit: (status: boolean) => void;
 }
 
 export const NoteList = ({
   notes,
-  deleteNote,
+  onRequestDelete,
   onSelectNote,
   toggleField,
   setIsEdit,
@@ -23,64 +23,15 @@ export const NoteList = ({
       <ul className={styles["notes__list"]}>
         {notes.map((note) => {
           return (
-            <li
-              className={`${styles["notes__list-item"]}`}
-              style={{ backgroundColor: note.bgColor }}
+            <NoteCard
+              note={note}
+              noteClass="notes__list-item"
+              onRequestDelete={onRequestDelete}
+              onSelectNote={onSelectNote}
+              toggleField={toggleField}
+              setIsEdit={setIsEdit}
               key={note.id}
-              onClick={() => {
-                onSelectNote(note);
-                setIsEdit(true);
-              }}
-            >
-              <h2
-                className={styles["notes__list-item-title"]}
-              >{`${note.title}`}</h2>
-              <div
-                className={styles["notes__list-item-content"]}
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(note.content),
-                }}
-              ></div>
-              <button
-                className={styles["notes__list-item-delete"]}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteNote(note.id);
-                }}
-              >
-                <img src="/icons/delete-icon.svg" alt="delete" />
-              </button>
-              <button
-                className={styles["notes__list-item-favorite"]}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleField(note.id, "isFavorite");
-                }}
-              >
-                <img
-                  src={
-                    note.isFavorite ? "/icons/star-fill.png" : "/icons/star.png"
-                  }
-                  alt="favorites"
-                />
-              </button>
-              <button
-                className={styles["notes__list-item-archive"]}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleField(note.id, "isArchived");
-                }}
-              >
-                <img
-                  src={
-                    note.isArchived
-                      ? "/icons/archived.png"
-                      : "/icons/archive.png"
-                  }
-                  alt="archive"
-                />
-              </button>
-            </li>
+            />
           );
         })}
       </ul>

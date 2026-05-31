@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Filter } from "../../types";
-import { useEditorState, type Editor } from "@tiptap/react";
+import { useEditorState } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
 
 import styles from "./Toolbar.module.css";
 
@@ -16,6 +18,8 @@ interface ToolbarProps {
   editor: Editor | null;
   textColor: string;
   setTextColor: (color: string) => void;
+  isOpenMobileMenu: boolean;
+  setIsOpenMobileMenu: () => void;
 }
 
 export const Toolbar = ({
@@ -30,9 +34,36 @@ export const Toolbar = ({
   editor,
   textColor,
   setTextColor,
+  isOpenMobileMenu,
+  setIsOpenMobileMenu,
 }: ToolbarProps) => {
   const [isFilterListOpened, setIsFilterListOpened] = useState<boolean>(false);
   const [isColorPaletteOpen, setIsColorPaletteOpen] = useState<boolean>(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const [savedRange, setSavedRange] = useState<{
+    from: number;
+    to: number;
+  } | null>(null);
+
+  const buttonRef = useRef<HTMLDivElement | null>(null);
+
+  const handlePaletteToggle = () => {
+    if (!isColorPaletteOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+
+      setCoords({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+      });
+
+      if (editor) {
+        const { from, to } = editor.state.selection;
+        setSavedRange({ from, to });
+      }
+    }
+
+    setIsColorPaletteOpen(!isColorPaletteOpen);
+  };
 
   const displayedFilterStatus = () => {
     switch (filter) {
@@ -112,6 +143,18 @@ export const Toolbar = ({
       {isEditing === false ? (
         <div className={styles["toolbar__global"]}>
           <button
+            className={
+              isOpenMobileMenu
+                ? `${styles["toolbar__global-burger"]} ${styles["isOpened"]}`
+                : `${styles["toolbar__global-burger"]}`
+            }
+            onClick={setIsOpenMobileMenu}
+          >
+            <span className={styles["burger-line"]}></span>
+            <span className={styles["burger-line"]}></span>
+            <span className={styles["burger-line"]}></span>
+          </button>
+          <button
             className={styles["toolbar__global-create"]}
             onClick={onCreateNote}
           >
@@ -190,10 +233,45 @@ export const Toolbar = ({
             >
               <div className={styles["format-buttons__container"]}>
                 <div className={styles["format-buttons__container-color"]}>
+                  {createPortal(
+                    <input
+                      value={textColor}
+                      type="color"
+                      className={`${styles["format-buttons__button-palette"]} ${isColorPaletteOpen ? styles["isOpen"] : ""}`}
+                      style={{
+                        top: `${coords.top + 10}px`,
+                        left: `${coords.left - 20}px`,
+                      }}
+                      onChange={(e) => {
+                        setTextColor(e.target.value);
+
+                        if (savedRange && editor) {
+                          editor
+                            .chain()
+                            .focus()
+                            .setTextSelection(savedRange)
+                            .setColor(e.target.value)
+                            .run();
+
+                          setSavedRange(null);
+                        } else {
+                          editor
+                            ?.chain()
+                            .focus()
+                            .setColor(e.target.value)
+                            .run();
+                        }
+
+                        setIsColorPaletteOpen(false);
+                      }}
+                    />,
+                    document.body,
+                  )}
                   <div
+                    ref={buttonRef}
                     className={`${styles["format-buttons__button"]} ${styles["palette-button"]}`}
                     onClick={() => {
-                      setIsColorPaletteOpen(!isColorPaletteOpen);
+                      handlePaletteToggle();
                     }}
                   >
                     ✎
@@ -202,20 +280,6 @@ export const Toolbar = ({
                       style={{ backgroundColor: textColor }}
                     ></span>
                   </div>
-
-                  <input
-                    value={textColor}
-                    type="color"
-                    className={
-                      isColorPaletteOpen
-                        ? `${styles["format-buttons__button-palette"]} ${styles["isOpen"]}`
-                        : `${styles["format-buttons__button-palette"]}`
-                    }
-                    onChange={(e) => {
-                      setTextColor(e.target.value);
-                      editor?.chain().focus().setColor(e.target.value).run();
-                    }}
-                  />
                 </div>
 
                 <button
@@ -314,10 +378,10 @@ export const Toolbar = ({
                 </button>
               </div>
             </div>
-            <button className={styles["toolbar__note-button"]} onClick={onSave}>
-              <img src="/icons/submit-icon.png" alt="submit" />
-            </button>
           </div>
+          <button className={styles["toolbar__note-button"]} onClick={onSave}>
+            <img src="/icons/submit-icon.png" alt="submit" />
+          </button>
         </div>
       )}
     </div>

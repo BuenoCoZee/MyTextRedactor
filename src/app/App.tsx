@@ -5,14 +5,23 @@ import { Sidebar } from "../features/notes/components/Sidebar/Sidebar";
 import { NoteEditor } from "../features/notes/components/NoteEditor/NoteEditor";
 import { Toolbar } from "../features/notes/components/Toolbar/Toolbar";
 import type { Editor } from "@tiptap/react";
+import { Modal } from "../shared/components/Modal/Modal";
+import { ConfirmDeleteDialog } from "../shared/components/ConfirmDeleteDialog/ConfirmDeleteDialog";
+import { ConfirmExitDialog } from "../shared/components/ConfimExitDialog/ConfirmExitDialog";
 
 import type { Tab, Note, Filter, NoteColor } from "../features/notes/types";
-import "./App.css";
+
+import { DndContext } from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
 
 function App() {
-  const { notes, addNote, deleteNote, toggleField, updateNote } = useNotes();
+  const { notes, addNote, deleteNote, toggleField, updateNote, isLoading } =
+    useNotes();
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("all");
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] =
+    useState<boolean>(false);
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingTitle, setEditingTitle] = useState<string>("");
   const [editingContent, setEditingContent] = useState<string>("");
@@ -21,9 +30,17 @@ function App() {
   const [sortBy, setSortBy] = useState<Filter>("none");
 
   const [editor, setEditor] = useState<Editor | null>(null);
-  const [noteColor, setNoteColor] = useState<NoteColor>("#2a2a2a");
 
+  const [noteColor, setNoteColor] = useState<NoteColor>("#2a2a2a");
   const [currentTextColor, setCurrentTextColor] = useState<string>("#78d9b8");
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState<boolean>(false);
+
+  const [originalTitle, setOriginalTitle] = useState<string>("");
+  const [originalContent, setOriginalContent] = useState<string>("");
+
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
 
   const filteredNotes = notes.filter((note) => {
     switch (activeTab) {
@@ -87,8 +104,12 @@ function App() {
   };
 
   const handleCancel = () => {
-    setIsEditing(false);
-    setSelectedNoteId(null);
+    if (originalTitle !== editingTitle || originalContent !== editingContent) {
+      setIsExitModalOpen(true);
+    } else {
+      setIsEditing(false);
+      setSelectedNoteId(null);
+    }
   };
 
   const handleCreateNote = () => {
@@ -97,6 +118,9 @@ function App() {
 
     setSelectedNoteId(null);
     setIsEditing(true);
+
+    setOriginalTitle("");
+    setOriginalContent("");
   };
 
   const handleEditNote = (note: Note) => {
@@ -105,6 +129,13 @@ function App() {
     setEditingContent(note.content);
     setIsEditing(true);
     setNoteColor(note.bgColor);
+
+    setOriginalTitle(note.title);
+    setOriginalContent(note.content);
+  };
+
+  const handleBurgerMenu = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
 
   const handleEditorReady = (editor: Editor | null) => {
@@ -119,46 +150,113 @@ function App() {
     setCurrentTextColor(color);
   };
 
+  const toggleModal = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    setIsDeleteModalOpen(true);
+    setNoteToDelete(id);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over?.id === "favorites") {
+      return toggleField(active.id as string, "isFavorite");
+    }
+
+    if (over?.id === "archive") {
+      return toggleField(active.id as string, "isArchived");
+    }
+
+    return;
+  };
+
   return (
     <div className="page-layout">
-      <div className="column-wrapper">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
-      <div className="column-wrapper">
-        <Toolbar
-          isEditing={isEditing}
-          onCreateNote={handleCreateNote}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          searchQuery={searchQuery}
-          filter={sortBy}
-          setSearchQuery={setSearchQuery}
-          setFilter={setSortBy}
-          editor={editor}
-          textColor={currentTextColor}
-          setTextColor={handleTextColorChange}
-        />
-        {isEditing ? (
-          <NoteEditor
-            title={editingTitle}
-            content={editingContent}
-            onTitleChange={setEditingTitle}
-            onContentChange={setEditingContent}
-            onEditorReady={handleEditorReady}
-            noteColor={noteColor}
-            setNoteColor={handleBgColorChange}
-            onColorChange={handleTextColorChange}
+      {isLoading ? (
+        <div className="interface-loader">Загрузка...</div>
+      ) : (
+        <DndContext onDragEnd={handleDragEnd}>
+          <div className="column-wrapper">
+            <Sidebar
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              isMobileMenuOpen={isMobileSidebarOpen}
+            />
+          </div>
+          <div className="column-wrapper">
+            <Toolbar
+              isEditing={isEditing}
+              onCreateNote={handleCreateNote}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              searchQuery={searchQuery}
+              filter={sortBy}
+              setSearchQuery={setSearchQuery}
+              setFilter={setSortBy}
+              editor={editor}
+              textColor={currentTextColor}
+              setTextColor={handleTextColorChange}
+              isOpenMobileMenu={isMobileSidebarOpen}
+              setIsOpenMobileMenu={handleBurgerMenu}
+            />
+            {isEditing ? (
+              <NoteEditor
+                title={editingTitle}
+                content={editingContent}
+                onTitleChange={setEditingTitle}
+                onContentChange={setEditingContent}
+                onEditorReady={handleEditorReady}
+                noteColor={noteColor}
+                setNoteColor={handleBgColorChange}
+                onColorChange={handleTextColorChange}
+              />
+            ) : (
+              <NoteList
+                notes={displayedNotes}
+                onRequestDelete={handleDeleteRequest}
+                onSelectNote={handleEditNote}
+                toggleField={toggleField}
+                setIsEdit={setIsEditing}
+              />
+            )}
+          </div>
+        </DndContext>
+      )}
+
+      {isDeleteModalOpen && (
+        <Modal onClose={toggleModal}>
+          <ConfirmDeleteDialog
+            onConfirm={() => {
+              deleteNote(noteToDelete!);
+              setIsDeleteModalOpen(false);
+              setNoteToDelete(null);
+            }}
+            onCancel={toggleModal}
           />
-        ) : (
-          <NoteList
-            notes={displayedNotes}
-            deleteNote={deleteNote}
-            onSelectNote={handleEditNote}
-            toggleField={toggleField}
-            setIsEdit={setIsEditing}
+        </Modal>
+      )}
+
+      {isExitModalOpen && (
+        <Modal
+          onClose={() => {
+            setIsExitModalOpen(!isExitModalOpen);
+          }}
+        >
+          <ConfirmExitDialog
+            onConfirm={() => {
+              setIsEditing(false);
+              setSelectedNoteId(null);
+              setIsExitModalOpen(false);
+            }}
+            onCancel={() => {
+              setIsExitModalOpen(false);
+            }}
           />
-        )}
-      </div>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -1,0 +1,23 @@
+& .nav-item {
+  cursor: pointer;
+  padding: 22px 12px;
+  transform: translateY(0);
+  transition-duration: 0.2s;
+  font-size: 20px;
+  margin-bottom: 5px;
+  z-index: 100;
+
+  &:hover {
+    background-color: var(--color-gray) !important;
+    transform: translateY(-10px);
+    border-right: 3px solid var(--color-turquoise-2);
+    box-shadow: 0px 4px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &.isSelected {
+    background-color: var(--color-gray) !important;
+    transform: translateY(-10px);
+    border-right: 3px solid var(--color-turquoise-2);
+    box-shadow: 0px 4px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}

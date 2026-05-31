@@ -1,16 +1,59 @@
 .toolbar {
-  width: calc(100% - 250px);
+  /* width: calc(100% - 250px); */
   border-bottom: 2px solid var(--color-turquoise-2);
-  padding: 10px 80px;
+  padding-block: 10px;
+  padding-inline: 80px;
   background-color: var(--color-dark-1);
   position: fixed;
-  z-index: 100;
+  z-index: 10;
+  min-width: 0;
+  max-width: calc(100% - 250px);
+  width: 100%;
+  overflow: visible;
 
   & .toolbar__global {
     display: flex;
     justify-content: flex-end;
     column-gap: 20px;
     align-items: center;
+
+    & .toolbar__global-burger {
+      width: 30px;
+      height: 30px;
+      display: none;
+      flex-direction: column;
+      justify-content: space-evenly;
+      margin-right: auto;
+
+      & .burger-line {
+        width: 100%;
+        height: 3px;
+        background-color: var(--color-turquoise-2);
+        transition: transform 0.2s ease;
+      }
+
+      @media (max-width: 1048px) {
+        & {
+          display: flex;
+        }
+      }
+
+      &.isOpened {
+        & .burger-line {
+          &:first-child {
+            transform: rotate(45deg) translateY(8px);
+          }
+
+          &:nth-child(2) {
+            display: none;
+          }
+
+          &:last-child {
+            transform: rotate(-45deg) translateY(-8px);
+          }
+        }
+      }
+    }
 
     & .toolbar__global-create {
       width: 30px;
@@ -108,12 +151,16 @@
         color: var(--color-turquoise-1);
         opacity: 0.7;
       }
+      @media (max-width: 1048px) {
+        & {
+          display: none;
+        }
+      }
     }
   }
 
   & .toolbar__note {
     display: flex;
-    justify-content: space-between;
     column-gap: 20px;
 
     & .toolbar__note-button {
@@ -121,6 +168,13 @@
         transform 0.2s ease,
         filter 0.2s ease;
       transform: translateY(0);
+
+      img {
+        min-width: 30px;
+        min-height: 30px;
+        max-width: 30px;
+        max-height: 30px;
+      }
 
       &:hover {
         transform: translateY(-5px);
@@ -141,8 +195,11 @@
     display: flex;
     align-items: center;
     column-gap: 20px;
+    flex: 1 1 auto;
+    justify-content: center;
 
     & .format-buttons {
+      overflow: visible;
       display: flex;
 
       & .format-buttons__button {
@@ -190,37 +247,100 @@
           position: relative;
 
           & .palette-button {
+            position: relative;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
           }
+        }
+      }
+    }
 
-          & .format-buttons__button-palette {
-            position: absolute;
-            top: 100%;
-            left: -25%;
-            width: 150%;
-            height: 100%;
-            background-color: transparent;
-            border: none;
-            transform: translateY(-60px);
-            transition:
-              transform 0.2s ease-in-out,
-              opacity 0.2s ease-in-out;
-            opacity: 0;
-            pointer-events: none;
+    @media (max-width: 768px) {
+      & {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
 
-            &.isOpen {
-              cursor: pointer;
-              opacity: 1;
-              transform: translateY(0);
-              pointer-events: all;
+        & .toolbar__note {
+          background-color: red;
+        }
+
+        & .format-buttons {
+          display: flex;
+          flex: 1 1 auto;
+          min-width: 0;
+          overflow-x: auto;
+          padding-block: 6px;
+          -webkit-overflow-scrolling: touch;
+          scroll-behavior: smooth;
+          scroll-snap-type: x mandatory;
+          margin: 0;
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+
+          & .format-buttons__container {
+            flex-shrink: 0;
+            display: flex;
+            column-gap: 10px;
+
+            & > * {
+              flex-shrink: 0;
             }
+          }
+
+          & .format-buttons__button {
+            flex: 0 0 40px;
+            width: 40px;
+            scroll-snap-align: start;
           }
         }
       }
     }
+  }
+
+  @media (max-width: 1048px) {
+    & {
+      padding-inline: 40px;
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 576px) {
+    & {
+      padding-inline: 10px;
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+}
+
+.format-buttons__button-palette {
+  cursor: pointer;
+  position: absolute;
+  z-index: 99;
+  background-color: transparent;
+  border: none;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease-in-out,
+    transform 0.2s ease-in-out,
+    scale 0.2s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+  width: 80px;
+  height: 40px;
+  transform: translateY(-10px) scale(0.95);
+
+  &.isOpen {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(4px) scale(1);
+    visibility: visible;
   }
 }

@@ -27,3 +27,5 @@ export type NoteColor =
   | "#5A6960"
   | "#4D5D6B"
   | "#6B5E53";
+
+export type ToggleField = "isFavorite" | "isArchived";
