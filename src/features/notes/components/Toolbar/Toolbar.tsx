@@ -20,6 +20,8 @@ interface ToolbarProps {
   setTextColor: (color: string) => void;
   isOpenMobileMenu: boolean;
   setIsOpenMobileMenu: () => void;
+  username: string;
+  onSignOut: () => void;
 }
 
 export const Toolbar = ({
@@ -36,7 +38,10 @@ export const Toolbar = ({
   setTextColor,
   isOpenMobileMenu,
   setIsOpenMobileMenu,
+  username,
+  onSignOut,
 }: ToolbarProps) => {
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
   const [isFilterListOpened, setIsFilterListOpened] = useState<boolean>(false);
   const [isColorPaletteOpen, setIsColorPaletteOpen] = useState<boolean>(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
@@ -138,6 +143,10 @@ export const Toolbar = ({
     },
   });
 
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
   return (
     <div className={styles["toolbar"]}>
       {isEditing === false ? (
@@ -221,6 +230,27 @@ export const Toolbar = ({
             className={styles["toolbar__global-search"]}
             placeholder="Поиск"
           />
+          <div
+            className={styles["toolbar__global-profile"]}
+            onClick={toggleProfileMenu}
+          >
+            <img src="./public/icons/profile-icon.png" alt="profile" />
+            <ul
+              className={
+                isProfileMenuOpen
+                  ? `${styles["toolbar__global-profile-menu"]} ${styles["isOpen"]}`
+                  : `${styles["toolbar__global-profile-menu"]}`
+              }
+            >
+              <li className={styles["profile-menu__item-title"]}>
+                Привет, {username}!
+              </li>
+              <li className={styles["profile-menu__item"]}>Профиль</li>
+              <li className={styles["profile-menu__item"]} onClick={onSignOut}>
+                Выйти
+              </li>
+            </ul>
+          </div>
         </div>
       ) : (
         <div className={styles["toolbar__note"]}>

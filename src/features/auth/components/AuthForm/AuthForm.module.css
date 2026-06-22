@@ -1,0 +1,77 @@
+.auth-form {
+  position: absolute;
+  top: 20%;
+  left: 35%;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  min-width: 320px;
+  height: 60%;
+  border: 12px solid var(--color-turquoise-2);
+  border-radius: 32px;
+  padding: 24px;
+  text-align: center;
+
+  & .auth-form__title {
+    margin-bottom: 24px;
+  }
+
+  & .auth-form__email,
+  .auth-form__password,
+  .auth-form__username {
+    background-color: transparent;
+    outline: none;
+    border: 3px solid var(--color-turquoise-2);
+    padding-block: 4px;
+    padding-inline: 12px;
+    font-size: 24px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    color: var(--color-turquoise-1);
+    width: 80%;
+    margin-inline: auto;
+  }
+
+  .auth-form__password {
+    margin-bottom: 36px;
+  }
+
+  & .auth-form__login {
+    padding-block: 8px;
+    padding-inline: 40px;
+    font-size: 24px;
+    color: var(--color-turquoise-1);
+    border: 3px solid var(--color-turquoise-2);
+    display: inline-block;
+    width: fit-content;
+    margin-inline: auto;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--color-turquoise-2);
+      color: var(--color-dark-1);
+    }
+  }
+
+  & .auth-form__change {
+    display: flex;
+    justify-content: center;
+    column-gap: 8px;
+
+    font-size: 20px;
+
+    & .auth-form__change-signUp {
+      color: var(--color-turquoise-1);
+      text-decoration: underline;
+      transition: color 0.2s ease-in-out;
+
+      &:hover {
+        color: var(--color-gray);
+      }
+    }
+  }
+}

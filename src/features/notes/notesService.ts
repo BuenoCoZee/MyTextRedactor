@@ -10,6 +10,7 @@ interface NoteFromDB {
   bg_color: NoteColor;
   created_at: string;
   updated_at: string;
+  user_id: string;
 }
 
 function mapNoteFromDB(dbNote: NoteFromDB): Note {
@@ -22,6 +23,7 @@ function mapNoteFromDB(dbNote: NoteFromDB): Note {
     bgColor: dbNote.bg_color,
     createdAt: dbNote.created_at,
     updatedAt: dbNote.updated_at,
+    userId: dbNote.user_id,
   };
 }
 
@@ -47,9 +49,16 @@ export const notesService = {
     is_archived: boolean;
     bg_color: NoteColor;
   }): Promise<Note> {
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData.user?.id;
+
+    if (!userId) throw new Error("Пользователь не авторизован");
+
+    const noteWithUser = { ...noteData, user_id: userId };
+
     const { data, error } = await supabase
       .from("notes")
-      .insert([noteData])
+      .insert([noteWithUser])
       .select()
       .single();
 

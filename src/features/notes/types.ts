@@ -7,6 +7,7 @@ export interface Note {
   createdAt: string;
   updatedAt: string;
   bgColor: NoteColor;
+  userId: string;
 }
 
 export type Tab = "all" | "favorites" | "archive";

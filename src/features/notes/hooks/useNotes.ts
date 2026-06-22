@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import type { Note, NoteColor, ToggleField } from "../types";
 import { notesService } from "../notesService";
 
-export const useNotes = () => {
+export const useNotes = (userId: string) => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingNotes, setIsLoadingNotes] = useState<boolean>(false);
 
   const addNote = async (noteItem: Note) => {
     const dbNote = {
@@ -96,8 +96,14 @@ export const useNotes = () => {
   };
 
   useEffect(() => {
+    if (!userId) {
+      // eslint-disable-next-line
+      setNotes([]);
+      setIsLoadingNotes(false);
+      return;
+    }
     const loadNotes = async () => {
-      setIsLoading(true);
+      setIsLoadingNotes(true);
 
       try {
         const data = await notesService.getAll();
@@ -105,12 +111,19 @@ export const useNotes = () => {
       } catch (err) {
         console.error("Не удалось загрузить заметки", err);
       } finally {
-        setIsLoading(false);
+        setIsLoadingNotes(false);
       }
     };
 
     loadNotes();
-  }, []);
+  }, [userId]);
 
-  return { notes, addNote, deleteNote, toggleField, updateNote, isLoading };
+  return {
+    notes,
+    addNote,
+    deleteNote,
+    toggleField,
+    updateNote,
+    isLoadingNotes,
+  };
 };

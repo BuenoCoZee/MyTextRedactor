@@ -8,15 +8,19 @@ import type { Editor } from "@tiptap/react";
 import { Modal } from "../shared/components/Modal/Modal";
 import { ConfirmDeleteDialog } from "../shared/components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { ConfirmExitDialog } from "../shared/components/ConfimExitDialog/ConfirmExitDialog";
+import { AuthForm } from "../features/auth/components/AuthForm/AuthForm";
 
 import type { Tab, Note, Filter, NoteColor } from "../features/notes/types";
 
 import { DndContext } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
+import { useAuth } from "./providers/useAuth";
 
 function App() {
-  const { notes, addNote, deleteNote, toggleField, updateNote, isLoading } =
-    useNotes();
+  const { user, isLoading, signOut } = useAuth();
+  const { notes, addNote, deleteNote, toggleField, updateNote } = useNotes(
+    user?.id || "",
+  );
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("all");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] =
@@ -96,6 +100,7 @@ function App() {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         bgColor: noteColor,
+        userId: user!.id,
       });
     }
 
@@ -115,12 +120,11 @@ function App() {
   const handleCreateNote = () => {
     setEditingTitle("");
     setEditingContent("");
-
     setSelectedNoteId(null);
     setIsEditing(true);
-
     setOriginalTitle("");
     setOriginalContent("");
+    setNoteColor("#2a2a2a");
   };
 
   const handleEditNote = (note: Note) => {
@@ -129,7 +133,6 @@ function App() {
     setEditingContent(note.content);
     setIsEditing(true);
     setNoteColor(note.bgColor);
-
     setOriginalTitle(note.title);
     setOriginalContent(note.content);
   };
@@ -177,6 +180,8 @@ function App() {
     <div className="page-layout">
       {isLoading ? (
         <div className="interface-loader">Загрузка...</div>
+      ) : !user ? (
+        <AuthForm />
       ) : (
         <DndContext onDragEnd={handleDragEnd}>
           <div className="column-wrapper">
@@ -201,6 +206,8 @@ function App() {
               setTextColor={handleTextColorChange}
               isOpenMobileMenu={isMobileSidebarOpen}
               setIsOpenMobileMenu={handleBurgerMenu}
+              username={user.user_metadata.username}
+              onSignOut={signOut}
             />
             {isEditing ? (
               <NoteEditor

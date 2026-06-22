@@ -45,7 +45,9 @@ export const NoteCard = ({
         style={{
           backgroundColor: note.bgColor,
 
-          border: note.isFavorite ? "3px solid yellow" : "3px transparent",
+          border: note.isFavorite
+            ? `3px solid yellow`
+            : `3px solid ${note.bgColor === "#2a2a2a" ? "#34b78b" : note.bgColor}`,
           boxShadow: note.isFavorite ? "0 0 4px 4px yellow" : undefined,
         }}
       >
