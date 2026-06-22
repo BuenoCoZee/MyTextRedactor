@@ -61,55 +61,57 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className={styles["auth-form"]}>
-      <h2 className={styles["auth-form__title"]}>
-        {!isLoginMode ? "Регистрация" : "Авторизация"}
-      </h2>
-      {!isLoginMode && (
+    <div className={styles["auth"]}>
+      <div className={styles["auth-form"]}>
+        <h2 className={styles["auth-form__title"]}>
+          {!isLoginMode ? "Регистрация" : "Авторизация"}
+        </h2>
+        {!isLoginMode && (
+          <input
+            type="text"
+            className={styles["auth-form__username"]}
+            placeholder="Имя пользователя"
+            onChange={handleUsernameChange}
+          />
+        )}
+
+        {error && <p className={styles["auth-form__error"]}>{error}</p>}
         <input
-          type="text"
-          className={styles["auth-form__username"]}
-          placeholder="Имя пользователя"
-          onChange={handleUsernameChange}
+          type="email"
+          value={mailValue}
+          onChange={(e) => {
+            handleMailChange(e);
+          }}
+          className={styles["auth-form__email"]}
+          placeholder="email"
         />
-      )}
-
-      {error && <p className={styles["auth-form__error"]}>{error}</p>}
-      <input
-        type="email"
-        value={mailValue}
-        onChange={(e) => {
-          handleMailChange(e);
-        }}
-        className={styles["auth-form__email"]}
-        placeholder="email"
-      />
-      <input
-        type="password"
-        value={passwordValue}
-        onChange={(e) => {
-          handlePasswordChange(e);
-        }}
-        className={styles["auth-form__password"]}
-        placeholder="Пароль"
-      />
-      <button
-        type="submit"
-        onClick={isLoginMode ? handleSubmitLogin : handleSubmitRegister}
-        className={styles["auth-form__login"]}
-        disabled={submitting}
-      >
-        {!isLoginMode ? "Создать аккаунт" : "Войти"}
-      </button>
-      <div className={styles["auth-form__change"]}>
-        <p> {!isLoginMode ? "Уже есть аккаунт?" : "Нет аккаунта?"}</p>
-
+        <input
+          type="password"
+          value={passwordValue}
+          onChange={(e) => {
+            handlePasswordChange(e);
+          }}
+          className={styles["auth-form__password"]}
+          placeholder="Пароль"
+        />
         <button
-          className={styles["auth-form__change-signUp"]}
-          onClick={toggleLoginMode}
+          type="submit"
+          onClick={isLoginMode ? handleSubmitLogin : handleSubmitRegister}
+          className={styles["auth-form__login"]}
+          disabled={submitting}
         >
-          {!isLoginMode ? "Войти" : "Зарегистрироваться"}
+          {!isLoginMode ? "Создать аккаунт" : "Войти"}
         </button>
+        <div className={styles["auth-form__change"]}>
+          <p> {!isLoginMode ? "Уже есть аккаунт?" : "Нет аккаунта?"}</p>
+
+          <button
+            className={styles["auth-form__change-signUp"]}
+            onClick={toggleLoginMode}
+          >
+            {!isLoginMode ? "Войти" : "Зарегистрироваться"}
+          </button>
+        </div>
       </div>
     </div>
   );
