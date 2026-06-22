@@ -234,7 +234,7 @@ export const Toolbar = ({
             className={styles["toolbar__global-profile"]}
             onClick={toggleProfileMenu}
           >
-            <img src="./public/icons/profile-icon.png" alt="profile" />
+            <img src="/icons/profile-icon.png" alt="profile" />
             <ul
               className={
                 isProfileMenuOpen
