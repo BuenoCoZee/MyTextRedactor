@@ -1,50 +1,55 @@
 import { useMemo, useState } from "react";
+import { useAuth } from "./providers/useAuth";
+
+import { DndContext } from "@dnd-kit/core";
+
 import { useNotes } from "../features/notes/hooks/useNotes";
+import { NoteEditor } from "../features/notes/components/NoteEditor/NoteEditor";
 import { NoteList } from "../features/notes/components/NoteList/NoteList";
 import { Sidebar } from "../features/notes/components/Sidebar/Sidebar";
-import { NoteEditor } from "../features/notes/components/NoteEditor/NoteEditor";
 import { Toolbar } from "../features/notes/components/Toolbar/Toolbar";
-import type { Editor } from "@tiptap/react";
+
 import { Modal } from "../shared/components/Modal/Modal";
 import { ConfirmDeleteDialog } from "../shared/components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import { ConfirmExitDialog } from "../shared/components/ConfimExitDialog/ConfirmExitDialog";
+
 import { AuthForm } from "../features/auth/components/AuthForm/AuthForm";
+import { ProfilePage } from "../features/auth/components/ProfilePage/ProfilePage";
 
 import type { Tab, Note, Filter, NoteColor } from "../features/notes/types";
-
-import { DndContext } from "@dnd-kit/core";
+import type { Editor } from "@tiptap/react";
 import type { DragEndEvent } from "@dnd-kit/core";
-import { useAuth } from "./providers/useAuth";
 
 function App() {
   const { user, isLoading, signOut } = useAuth();
   const { notes, addNote, deleteNote, toggleField, updateNote } = useNotes(
     user?.id || "",
   );
+
+  const [editor, setEditor] = useState<Editor | null>(null);
+
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("all");
+
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isProfilePageOpen, setIsProfilePageOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState<boolean>(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] =
     useState<boolean>(false);
 
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingTitle, setEditingTitle] = useState<string>("");
   const [editingContent, setEditingContent] = useState<string>("");
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<Filter>("none");
 
-  const [editor, setEditor] = useState<Editor | null>(null);
-
   const [noteColor, setNoteColor] = useState<NoteColor>("#2a2a2a");
   const [currentTextColor, setCurrentTextColor] = useState<string>("#78d9b8");
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-  const [isExitModalOpen, setIsExitModalOpen] = useState<boolean>(false);
-
   const [originalTitle, setOriginalTitle] = useState<string>("");
   const [originalContent, setOriginalContent] = useState<string>("");
-
-  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
 
   const filteredNotes = notes.filter((note) => {
     switch (activeTab) {
@@ -157,6 +162,10 @@ function App() {
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
 
+  const toggleProfilePage = () => {
+    setIsProfilePageOpen(!isProfilePageOpen);
+  };
+
   const handleDeleteRequest = (id: string) => {
     setIsDeleteModalOpen(true);
     setNoteToDelete(id);
@@ -182,6 +191,8 @@ function App() {
         <div className="interface-loader">Загрузка...</div>
       ) : !user ? (
         <AuthForm />
+      ) : isProfilePageOpen ? (
+        <ProfilePage onCloseProfile={toggleProfilePage} />
       ) : (
         <DndContext onDragEnd={handleDragEnd}>
           <div className="column-wrapper">
@@ -207,6 +218,7 @@ function App() {
               isOpenMobileMenu={isMobileSidebarOpen}
               setIsOpenMobileMenu={handleBurgerMenu}
               username={user.user_metadata.username}
+              onProfileOpen={toggleProfilePage}
               onSignOut={signOut}
             />
             {isEditing ? (

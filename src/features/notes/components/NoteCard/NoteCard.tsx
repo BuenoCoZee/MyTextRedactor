@@ -82,6 +82,7 @@ export const NoteCard = ({
           <img
             src={note.isFavorite ? "/icons/star-fill.png" : "/icons/star.png"}
             alt="favorites"
+            className={styles["note-item__icon"]}
           />
         </button>
         <button

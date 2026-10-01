@@ -21,6 +21,7 @@ interface ToolbarProps {
   isOpenMobileMenu: boolean;
   setIsOpenMobileMenu: () => void;
   username: string;
+  onProfileOpen: () => void;
   onSignOut: () => void;
 }
 
@@ -39,6 +40,7 @@ export const Toolbar = ({
   isOpenMobileMenu,
   setIsOpenMobileMenu,
   username,
+  onProfileOpen,
   onSignOut,
 }: ToolbarProps) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
@@ -154,7 +156,7 @@ export const Toolbar = ({
           <button
             className={
               isOpenMobileMenu
-                ? `${styles["toolbar__global-burger"]} ${styles["isOpened"]}`
+                ? `${styles["toolbar__global-burger"]} ${styles["is-opened"]}`
                 : `${styles["toolbar__global-burger"]}`
             }
             onClick={setIsOpenMobileMenu}
@@ -181,7 +183,7 @@ export const Toolbar = ({
             <ul
               className={
                 isFilterListOpened
-                  ? `${styles["toolbar__global-filter-list"]} ${styles["isOpened"]}`
+                  ? `${styles["toolbar__global-filter-list"]} ${styles["is-opened"]}`
                   : `${styles["toolbar__global-filter-list"]}`
               }
             >
@@ -234,18 +236,23 @@ export const Toolbar = ({
             className={styles["toolbar__global-profile"]}
             onClick={toggleProfileMenu}
           >
-            <img src="/icons/profile-icon.png" alt="profile" />
+            <img src="/icons/profile-icon.png" alt="profile" className={styles["toolbar__global-profile-icon"]} />
             <ul
               className={
                 isProfileMenuOpen
-                  ? `${styles["toolbar__global-profile-menu"]} ${styles["isOpen"]}`
+                  ? `${styles["toolbar__global-profile-menu"]} ${styles["is-opened"]}`
                   : `${styles["toolbar__global-profile-menu"]}`
               }
             >
               <li className={styles["profile-menu__item-title"]}>
                 Привет, {username}!
               </li>
-              <li className={styles["profile-menu__item"]}>Профиль</li>
+              <li
+                className={styles["profile-menu__item"]}
+                onClick={onProfileOpen}
+              >
+                Профиль
+              </li>
               <li className={styles["profile-menu__item"]} onClick={onSignOut}>
                 Выйти
               </li>
@@ -267,7 +274,7 @@ export const Toolbar = ({
                     <input
                       value={textColor}
                       type="color"
-                      className={`${styles["format-buttons__button-palette"]} ${isColorPaletteOpen ? styles["isOpen"] : ""}`}
+                      className={`${styles["format-buttons__button-palette"]} ${isColorPaletteOpen ? styles["is-opened"] : ""}`}
                       style={{
                         top: `${coords.top + 10}px`,
                         left: `${coords.left - 20}px`,
@@ -399,7 +406,7 @@ export const Toolbar = ({
 
               <div className={styles["format-buttons__container"]}>
                 <button
-                  className={`${styles["format-buttons__button"]} ${isBlockquote ? styles["isActive"] : ""}`}
+                  className={`${styles["format-buttons__button"]} ${isBlockquote ? styles["is-active"] : ""}`}
                   onClick={() => {
                     editor?.chain().focus().toggleBlockquote().run();
                   }}
@@ -410,7 +417,7 @@ export const Toolbar = ({
             </div>
           </div>
           <button className={styles["toolbar__note-button"]} onClick={onSave}>
-            <img src="/icons/submit-icon.png" alt="submit" />
+            <img src="/icons/submit-icon.png" alt="submit" className={styles["toolbar__note-button-icon"]}/>
           </button>
         </div>
       )}

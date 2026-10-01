@@ -98,6 +98,7 @@ export const NoteEditor = ({
           value={title}
           onChange={handleTitleChange}
           placeholder="Заголовок"
+          className={styles["editor__label-input"]}
         />
       </label>
 

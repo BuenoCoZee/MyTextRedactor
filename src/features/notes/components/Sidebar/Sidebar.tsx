@@ -22,7 +22,7 @@ export const Sidebar = ({
       }
     >
       <nav className={styles["sidebar__nav"]} aria-label="Main menu">
-        <ul>
+        <ul className={styles['sidebar__nav-menu']}>
           <SidebarItem
             localTab="all"
             tabClass="sidebar__nav-item"
